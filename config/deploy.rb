@@ -42,6 +42,7 @@ set :rbenv_roles, :all # default value
 # set :keep_releases, 5
 
 namespace :deploy do
+  after :publishing, 'deploy:restart'
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
