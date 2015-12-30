@@ -9,7 +9,14 @@ set :repo_url, 'git@github.com:adamrunner/designport-backup-server.git'
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, '/home/designport/backup-server'
+set :rbenv_type, :user # or :system, depends on your rbenv setup
 
+# in case you want to set ruby version from the file:
+set :rbenv_ruby, File.read('.ruby-version').strip
+
+set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
+set :rbenv_map_bins, %w{rake gem bundle ruby}
+set :rbenv_roles, :all # default value
 # Default value for :scm is :git
 # set :scm, :git
 
