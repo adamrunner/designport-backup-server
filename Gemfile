@@ -6,6 +6,10 @@ gem 'sinatra'
 gem 'compass'
 gem 'bootstrap-sass'
 gem 'file-tail'
+gem 'capistrano'
+gem 'capistrano-passenger'
+gem 'capistrano-rbenv', '~> 2.0'
+gem 'capistrano-bundler'
 
 group :test do
     gem 'rspec'
