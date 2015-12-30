@@ -1,0 +1,16 @@
+<% if @backup_drive %>
+  <div class="alert alert-danger">
+    Backup drive is not ready to be removed.
+  </div>
+<% else %>
+  <div class="alert alert-success">
+    Backup drive is ready to be removed.
+  </div>
+<% end %>
+
+<form action="/stop_drive" method="POST">
+  <button type="submit" class="btn btn-success">Stop Backup Drive</button>
+</form>
+
+<p>Below is the log file for the backup, any errors will be noted here.</p>
+<textarea name="name" class="form-control monospace" readonly="readonly" rows='40'><%= @log_file %></textarea>
