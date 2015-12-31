@@ -3,7 +3,7 @@
 readonly PROGNAME=$(basename "$0")
 readonly LOCKFILE_DIR=/tmp
 readonly LOCK_FD=200
-readonly SOURCE='/media/downloads'
+readonly SOURCE='/media/engineering'
 readonly DESTINATION='/media/usb'
 readonly LOG_FILE="/var/log/$PROGNAME.log"
 readonly EXCLUDE_FILE='/etc/rsync-exclude'
