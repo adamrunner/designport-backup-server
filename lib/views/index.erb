@@ -13,12 +13,14 @@
 </form>
 <br />
 <p>Below is the log file for the backup, any errors will be noted here.</p>
-<textarea name="name" class="form-control monospace" readonly="readonly" rows='40'><%= @log_file %></textarea>
+<textarea id="log_view" class="form-control monospace" readonly="readonly" rows='40'><%= @log_file %></textarea>
 
 <script type="text/javascript">
-  function reloadPage() {
-    location.reload(true);
+  function updateLog() {
+    $.get('/log', function(data){
+      $('#log_view').val(data)
+    })
   }
 
-  var intervalID = window.setInterval(reloadPage, 3000);
+  var intervalID = window.setInterval(updateLog, 3000);
 </script>
