@@ -12,7 +12,7 @@
   <button type="submit" class="btn btn-success">Stop Backup Drive</button>
 </form>
 <br />
-<p>Below is the log file for the backup, any errors will be noted here.</p>
+<p>Below is the last 30 lines of the log file for the backup, this page will automatically load any new lines if the backup is currently running.</p>
 <textarea id="log_view" class="form-control monospace" readonly="readonly" rows='40'><%= @log_file %></textarea>
 
 <script type="text/javascript">
