@@ -2,8 +2,8 @@ module BackupServer
   class Status < Sinatra::Base
 
     #TODO: Make this dependent on environment
-    # set :logfile, 'tmp/designport_backup.sh.log'
-    set :logfile, '/var/log/designport_backup.sh.log'
+    set :logfile, 'tmp/designport_backup.sh.log'
+    # set :logfile, '/var/log/designport_backup.sh.log'
 
 
     def is_backup_mounted?
@@ -17,7 +17,11 @@ module BackupServer
 
     def tail_logfile
       f = File.open(settings.logfile)
-      f.seek(-8192, IO::SEEK_END)
+      begin
+        f.seek(-8192, IO::SEEK_END)
+      rescue Errno::EINVAL => e
+        f.seek(0)
+      end
       f.readlines.reverse.join
     end
 
