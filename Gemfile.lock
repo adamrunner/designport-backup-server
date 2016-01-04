@@ -34,6 +34,7 @@ GEM
       sass (>= 3.2, < 3.5)
     diff-lcs (1.2.5)
     docile (1.1.5)
+    dotenv (2.0.2)
     execjs (2.6.0)
     ffi (1.9.10)
     file-tail (1.1.0)
@@ -92,6 +93,7 @@ DEPENDENCIES
   capistrano-passenger
   capistrano-rbenv (~> 2.0)
   compass
+  dotenv
   file-tail
   rack-test
   rake

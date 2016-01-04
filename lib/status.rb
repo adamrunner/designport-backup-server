@@ -2,7 +2,7 @@ module BackupServer
   class Status < Sinatra::Base
 
     #TODO: Make this dependent on environment
-    set :logfile, 'tmp/designport_backup.sh.log'
+    set :logfile, ENV['LOGFILE_LOCATION']
     # set :logfile, '/var/log/designport_backup.sh.log'
 
 

@@ -36,3 +36,4 @@ bower.json
 .powenv
 *.log
 coverage
+.env
