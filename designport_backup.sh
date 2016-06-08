@@ -3,12 +3,13 @@
 readonly PROGNAME=$(basename "$0")
 readonly LOCKFILE_DIR=/tmp
 readonly LOCK_FD=200
-readonly SOURCE='/media/engineering'
+readonly SOURCE='/media/data/'
 readonly DESTINATION='/media/usb'
 readonly LOG_FILE="/var/log/$PROGNAME.log"
 readonly EXCLUDE_FILE='/etc/rsync-exclude'
 readonly MOUNT_POINT='/media/usb'
-
+readonly BACKUP_DRIVE_1='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528'
+readonly BACKUP_DRIVE_2='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece789'
 lock() {
     local prefix=$1
     local fd=${2:-$LOCK_FD}
@@ -30,12 +31,26 @@ eexit() {
     exit 1
 }
 
+determineDriveToMount(){
+  if [ -b "$BACKUP_DRIVE_1" ];
+  then
+   echo `date +%Y/%m/%d' '%T` "Found Backup Drive 1" >> $LOG_FILE
+   DEVICE="$BACKUP_DRIVE_1"
+  fi
+  if [ -b "$BACKUP_DRIVE_2" ];
+  then
+    echo `date +%Y/%m/%d' '%T` "Found Backup Drive 2" >> $LOG_FILE
+    DEVICE="$BACKUP_DRIVE_2"
+  fi
+}
+
 mountUsbDrive() {
   if mountpoint -q $MOUNT_POINT
   then
      echo `date +%Y/%m/%d' '%T` "Backup drive already mounted" >> $LOG_FILE
   else
-    mount /dev/sdb1 $MOUNT_POINT
+    determineDriveToMount
+    mount $DEVICE $MOUNT_POINT
     echo `date +%Y/%m/%d' '%T` "Mounted backup drive" >> $LOG_FILE
   fi
 }
@@ -46,7 +61,7 @@ createLogFile() {
 }
 
 runBackup() {
-  rsync -a --no-perms --exclude-from=$EXCLUDE_FILE --log-file=$LOG_FILE $SOURCE $DESTINATION
+  rsync -a  --exclude-from=$EXCLUDE_FILE --log-file=$LOG_FILE $SOURCE $DESTINATION
 
   echo `date +%Y/%m/%d' '%T` 'Finishing designPORT backup' >> $LOG_FILE
   umount $MOUNT_POINT
