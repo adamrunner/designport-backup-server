@@ -61,7 +61,7 @@ createLogFile() {
 }
 
 runBackup() {
-  rsync -a  --exclude-from=$EXCLUDE_FILE --log-file=$LOG_FILE $SOURCE $DESTINATION
+  rsync -a  --exclude-from=$EXCLUDE_FILE $SOURCE $DESTINATION
 
   echo `date +%Y/%m/%d' '%T` 'Finishing designPORT backup' >> $LOG_FILE
   umount $MOUNT_POINT
