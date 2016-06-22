@@ -9,7 +9,7 @@ readonly LOG_FILE="/var/log/$PROGNAME.log"
 readonly EXCLUDE_FILE='/etc/rsync-exclude'
 readonly MOUNT_POINT='/media/usb'
 readonly BACKUP_DRIVE_1='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528'
-readonly BACKUP_DRIVE_2='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece789'
+readonly BACKUP_DRIVE_2='/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa'
 lock() {
     local prefix=$1
     local fd=${2:-$LOCK_FD}
