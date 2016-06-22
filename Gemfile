@@ -4,7 +4,7 @@ gem 'rake'
 
 gem 'sinatra'
 gem 'compass'
-gem 'bootstrap-sass'
+gem 'bootstrap'
 gem 'file-tail'
 gem 'dotenv'
 gem 'capistrano'

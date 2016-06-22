@@ -5,10 +5,20 @@ module BackupServer
     set :logfile, ENV['LOGFILE_LOCATION']
     # set :logfile, '/var/log/designport_backup.sh.log'
 
+    set :backup_drive_1, "/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528"
+
+    set :backup_drive_2, "/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa"
 
     def is_backup_mounted?
       mounted = `mountpoint -q /media/usb && echo 'mounted' || echo 'false'`
       mounted =~ /mounted/
+    end
+
+    def connected_drives
+      return {
+        drive_1: Dir.exists?(settings.backup_drive_1),
+        drive_2: Dir.exists?(settings.backup_drive_2)
+      }
     end
 
     def is_backup_running?
@@ -26,8 +36,9 @@ module BackupServer
     end
 
     get '/' do
-      @backup_drive = is_backup_mounted?
-      @log_file = tail_logfile
+      @backup_drive     = is_backup_mounted?
+      @log_file         = tail_logfile
+      @connected_drives = connected_drives
       erb :index
     end
 
