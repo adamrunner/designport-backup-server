@@ -10,11 +10,12 @@ readonly EXCLUDE_FILE='/etc/rsync-exclude'
 readonly MOUNT_POINT='/media/usb'
 readonly BACKUP_DRIVE_1='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528'
 readonly BACKUP_DRIVE_2='/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa'
+LOCK_FILE=''
 lock() {
     local prefix=$1
     local fd=${2:-$LOCK_FD}
     local lock_file=$LOCKFILE_DIR/$prefix.lock
-
+    LOCK_FILE="$lock_file"
     # create lock file
     eval "exec $fd>$lock_file"
 
@@ -66,6 +67,8 @@ runBackup() {
   echo `date +%Y/%m/%d' '%T` 'Finishing designPORT backup' >> $LOG_FILE
   umount $MOUNT_POINT
   echo `date +%Y/%m/%d' '%T` 'Unmounted backup drive' >> $LOG_FILE
+  rm $LOCK_FILE
+  echo `date +%Y/%m/%d' '%T` 'Removed Lock File' >> $LOG_FILE
 }
 
 checkIfRoot() {
@@ -84,12 +87,12 @@ checkIfDriveMounted() {
 }
 main() {
   checkIfRoot
-  mountUsbDrive
-  checkIfDriveMounted
-  createLogFile
-    lock $PROGNAME \
-        || eexit "`date +%Y/%m/%d' '%T` Only one instance of $PROGNAME can run at one time."
+  lock $PROGNAME \
+      || eexit "`date +%Y/%m/%d' '%T` Only one instance of $PROGNAME can run at one time."
 
+    mountUsbDrive
+    checkIfDriveMounted
+    createLogFile
     runBackup
 }
 

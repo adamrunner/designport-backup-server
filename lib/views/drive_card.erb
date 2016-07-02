@@ -1,0 +1,34 @@
+<div class="card text-center">
+  <div class="card-block">
+    <h3 class="card-title"><%= drive_card[:drive] %></h3>
+    <div class="card-text">
+      <form action="/stop_drive" method="POST" class="form-inline">
+        <span class="fa-stack fa-4x">
+          <i class="fa fa-square fa-stack-2x <%= drive_connected_class(drive_card) %>"></i>
+          <i class="fa fa-hdd-o fa-stack-1x text-inverse"></i>
+        </span>
+        <% if (is_backup_running?(drive_card) and is_drive_connected?(drive_card)) %>
+          <span class="fa-stack fa-4x">
+            <i class="fa fa-square fa-stack-2x text-success"></i>
+            <i class="fa fa-refresh fa-spin fa-stack-1x text-inverse"></i>
+          </span>
+        <% end %>
+        <% if is_drive_connected?(drive_card) and !is_backup_running?(drive_card) and is_backup_mounted? %>
+          <button class="btn btn-default" type="submit"><i class="fa fa-eject fa-4x"></i></button>
+        <% end %>
+        <ul class="list-unstyled">
+          <li><%= drive_connected?(drive_card)%></li>
+          <% if is_drive_connected?(drive_card) %>
+            <% if is_backup_mounted? %>
+              <li class="text-danger"><%= drive_card[:drive] %> - Mounted, Do Not Disconnect</li>
+            <% else %>
+              <li class="text-success"><%= drive_card[:drive] %> - Not Mounted, Safe To Disconnect</li>
+            <% end %>
+          <% end %>
+          <li>Last Connected - <%= drive_card[:last_connected] %></li>
+          <li>Last Backed Up - <%= drive_card[:last_backup] %></li>
+        </ul>
+      </form>
+    </div>
+  </div>
+</div>

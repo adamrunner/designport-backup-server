@@ -1,48 +1,11 @@
-<% if @backup_drive %>
-  <div class="alert alert-danger">
-    Backup drive is not ready to be removed.
-  </div>
-<% else %>
-  <div class="alert alert-success">
-    Backup drive is ready to be removed.
+<% if flash[:notice] %>
+  <div class="alert alert-dismissible alert-success">
+    <%= flash[:notice] %>
   </div>
 <% end %>
-
-<div class="card-deck-wrapper">
-  <div class="card-deck">
-    <div class="card card-danger card-inverse text-center">
-      <div class="card-block">
-        <h3 class="card-title">Backup Drive 1</h3>
-        <div class="card-text">
-          <i class="fa fa-hdd-o fa-4x" aria-hidden="true"></i>
-          <ul class="list-unstyled">
-            <li>Backup Drive 1 - Not Connected</li>
-            <li>Last Connected - 7 days ago</li>
-            <li>Last Backed Up - 12 days ago</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="card card-success card-inverse text-center">
-      <div class="card-block">
-        <h3 class="card-title">Backup Drive 2</h3>
-        <div class="card-text">
-          <i class="fa fa-hdd-o fa-4x" aria-hidden="true"></i>
-          <ul class="list-unstyled">
-            <li>Backup Drive 1 - Connected</li>
-            <li>Last Connected - Now</li>
-            <li>Last Backed Up - 1 day ago</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="card-deck">
+  <%= partial :drive_card, collection: @connected_drives %>
 </div>
-
-<form action="/stop_drive" method="POST">
-  <button type="submit" class="btn btn-success">Stop Backup Drive</button>
-</form>
 <br />
 <p>Below is the last 30 lines of the log file for the backup, this page will automatically load any new lines if the backup is currently running.</p>
 <textarea id="log_view" class="form-control monospace" readonly="readonly" rows='40'><%= @log_file %></textarea>
@@ -53,6 +16,7 @@
       $('#log_view').val(data)
     })
   }
-
-  var intervalID = window.setInterval(updateLog, 3000);
+  <% unless settings.development? %>
+    var intervalID = window.setInterval(updateLog, 3000);
+  <% end %>
 </script>

@@ -1,3 +1,5 @@
+@import "font-awesome-compass";
+@import "font-awesome";
 // Import custom Bootstrap variables
 @import "bootstrap-variables";
 // Import Bootstrap
@@ -12,4 +14,7 @@
 .monospace {
   font-family: $font-family-monospace;
   font-size: 10px;
+}
+.text-inverse {
+  color: $gray-lightest;
 }

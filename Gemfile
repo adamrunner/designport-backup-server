@@ -1,10 +1,12 @@
 source 'https://rubygems.org'
 
 gem 'rake'
-
 gem 'sinatra'
+gem 'sinatra-partial'
+gem 'sinatra-flash'
 gem 'compass'
 gem 'bootstrap'
+gem 'font-awesome-sass'
 gem 'file-tail'
 gem 'dotenv'
 gem 'capistrano'

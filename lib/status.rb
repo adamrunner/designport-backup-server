@@ -1,6 +1,10 @@
+require 'sinatra/partial'
 module BackupServer
   class Status < Sinatra::Base
-
+    enable :sessions
+    register Sinatra::Flash
+    register Sinatra::Partial
+    set :partial_template_engine, :erb
     #TODO: Make this dependent on environment
     set :logfile, ENV['LOGFILE_LOCATION']
     # set :logfile, '/var/log/designport_backup.sh.log'
@@ -10,19 +14,43 @@ module BackupServer
     set :backup_drive_2, "/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa"
 
     def is_backup_mounted?
-      mounted = `mountpoint -q /media/usb && echo 'mounted' || echo 'false'`
-      mounted =~ /mounted/
+      if settings.development?
+        # false
+        true
+      else
+        mounted = `mountpoint -q /media/usb && echo 'mounted' || echo 'false'`
+        mounted =~ /mounted/
+      end
     end
 
     def connected_drives
-      return {
-        drive_1: Dir.exists?(settings.backup_drive_1),
-        drive_2: Dir.exists?(settings.backup_drive_2)
-      }
+      return [
+        { drive: "Backup Drive 1", backup_running: false, connected:Dir.exists?(settings.backup_drive_1), last_backup:'5 days ago', last_connected: '5 days ago' },
+        { drive: "Backup Drive 2", backup_running: true, connected:true, last_backup: '1 day ago', last_connected: 'Now'},
+        # { drive: "Backup Drive 2", connected:Dir.exists?(settings.backup_drive_2) },
+      ]
     end
 
-    def is_backup_running?
-      #TODO: determine if backup is currently running - lock file present etc.
+    def is_drive_connected?(drive)
+      drive[:connected]
+    end
+
+    def drive_connected?(drive)
+      connected = drive[:connected] ? "Connected" : "Not Connected"
+      "#{drive[:drive]} - #{connected}"
+    end
+
+    def drive_connected_class(drive)
+      drive[:connected] ? "text-success" : "text-danger"
+    end
+
+    def is_backup_running?(drive)
+      #TODO: this isn't drive dependent in prod
+      if settings.development?
+        drive[:backup_running]
+      else
+        File.exists?('/tmp/designport_backup.sh.lock')
+      end
     end
 
     def tail_logfile
@@ -47,7 +75,12 @@ module BackupServer
     end
 
     post '/stop_drive' do
-      `sudo umount /media/usb`
+      if settings.development?
+
+      else
+        `sudo umount /media/usb`
+      end
+      flash[:notice] = "Unmounting backup drive"
       redirect '/'
     end
   end
