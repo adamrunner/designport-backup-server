@@ -1,10 +1,20 @@
+require 'sinatra'
+require 'sqlite3'
 require 'sinatra/partial'
+require 'sinatra/flash'
+require 'sinatra/activerecord'
+class Backup < ActiveRecord::Base
+
+end
+
 module BackupServer
   class Status < Sinatra::Base
     enable :sessions
     register Sinatra::Flash
     register Sinatra::Partial
+    register Sinatra::ActiveRecordExtension
     set :partial_template_engine, :erb
+
     #TODO: Make this dependent on environment
     set :logfile, ENV['LOGFILE_LOCATION']
     # set :logfile, '/var/log/designport_backup.sh.log'
@@ -25,9 +35,8 @@ module BackupServer
 
     def connected_drives
       return [
-        { drive: "Backup Drive 1", backup_running: false, connected:Dir.exists?(settings.backup_drive_1), last_backup:'5 days ago', last_connected: '5 days ago' },
-        { drive: "Backup Drive 2", backup_running: true, connected:true, last_backup: '1 day ago', last_connected: 'Now'},
-        # { drive: "Backup Drive 2", connected:Dir.exists?(settings.backup_drive_2) },
+        { drive: "Backup Drive 1", connected:Dir.exists?(settings.backup_drive_1)},
+        { drive: "Backup Drive 2", connected:Dir.exists?(settings.backup_drive_2) }
       ]
     end
 

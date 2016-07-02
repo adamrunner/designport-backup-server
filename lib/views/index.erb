@@ -6,17 +6,3 @@
 <div class="card-deck">
   <%= partial :drive_card, collection: @connected_drives %>
 </div>
-<br />
-<p>Below is the last 30 lines of the log file for the backup, this page will automatically load any new lines if the backup is currently running.</p>
-<textarea id="log_view" class="form-control monospace" readonly="readonly" rows='40'><%= @log_file %></textarea>
-
-<script type="text/javascript">
-  function updateLog() {
-    $.get('/log', function(data){
-      $('#log_view').val(data)
-    })
-  }
-  <% unless settings.development? %>
-    var intervalID = window.setInterval(updateLog, 3000);
-  <% end %>
-</script>
