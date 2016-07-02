@@ -11,13 +11,24 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160702045951) do
+ActiveRecord::Schema.define(:version => 20160702210931) do
 
   create_table "backups", :force => true do |t|
     t.datetime "started_at"
     t.datetime "completed_at"
     t.string   "backup_drive"
     t.string   "exit_code"
+    t.integer  "drive_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "drives", :force => true do |t|
+    t.datetime "last_connected"
+    t.string   "drive_uuid_path"
+    t.string   "drive_name"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
 end

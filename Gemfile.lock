@@ -49,8 +49,6 @@ GEM
     dotenv (2.0.2)
     execjs (2.7.0)
     ffi (1.9.10)
-    file-tail (1.1.0)
-      tins (~> 1.0)
     font-awesome-sass (4.4.0)
       sass (>= 3.2)
     i18n (0.7.0)
@@ -103,7 +101,6 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     tilt (2.0.1)
-    tins (1.8.1)
     tzinfo (0.3.50)
 
 PLATFORMS
@@ -118,7 +115,6 @@ DEPENDENCIES
   capistrano-rbenv (~> 2.0)
   compass
   dotenv
-  file-tail
   font-awesome-sass
   rack-test
   rake

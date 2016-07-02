@@ -4,7 +4,19 @@ require 'sinatra/partial'
 require 'sinatra/flash'
 require 'sinatra/activerecord'
 class Backup < ActiveRecord::Base
+  belongs_to :drive
+end
 
+class Drive < ActiveRecord::Base
+  has_many :backups
+
+  def connected?
+    if BackupServer::Status.settings.development?
+      drive_name == "Backup Drive 1"
+    else
+      File.exists?(drive_uuid_path)
+    end
+  end
 end
 
 module BackupServer
@@ -15,13 +27,7 @@ module BackupServer
     register Sinatra::ActiveRecordExtension
     set :partial_template_engine, :erb
 
-    #TODO: Make this dependent on environment
     set :logfile, ENV['LOGFILE_LOCATION']
-    # set :logfile, '/var/log/designport_backup.sh.log'
-
-    set :backup_drive_1, "/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528"
-
-    set :backup_drive_2, "/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa"
 
     def is_backup_mounted?
       if settings.development?
@@ -32,55 +38,26 @@ module BackupServer
         mounted =~ /mounted/
       end
     end
-
-    def connected_drives
-      return [
-        { drive: "Backup Drive 1", connected:File.exists?(settings.backup_drive_1)},
-        { drive: "Backup Drive 2", connected:File.exists?(settings.backup_drive_2) }
-      ]
-    end
-
-    def is_drive_connected?(drive)
-      drive[:connected]
-    end
-
-    def drive_connected?(drive)
-      connected = drive[:connected] ? "Connected" : "Not Connected"
-      "#{drive[:drive]} - #{connected}"
+    def connected_text(drive)
+      drive.connected? ? "#{drive.drive_name} - Connected" : "#{drive.drive_name} - Not Connected"
     end
 
     def drive_connected_class(drive)
-      drive[:connected] ? "text-success" : "text-danger"
+      drive.connected? ? "text-success" : "text-danger"
     end
 
-    def is_backup_running?(drive)
-      #TODO: this isn't drive dependent in prod
+    def is_backup_running?
       if settings.development?
-        drive[:backup_running]
+        # false
+        true
       else
         File.exists?('/tmp/designport_backup.sh.lock')
       end
     end
 
-    def tail_logfile
-      f = File.open(settings.logfile)
-      begin
-        f.seek(-8192, IO::SEEK_END)
-      rescue Errno::EINVAL => e
-        f.seek(0)
-      end
-      f.readlines.reverse.join
-    end
-
     get '/' do
-      @backup_drive     = is_backup_mounted?
-      @log_file         = tail_logfile
-      @connected_drives = connected_drives
+      @drives = Drive.all
       erb :index
-    end
-
-    get '/log' do
-      tail_logfile
     end
 
     post '/stop_drive' do
@@ -89,7 +66,7 @@ module BackupServer
       else
         `sudo umount /media/usb`
       end
-      flash[:notice] = "Unmounting backup drive"
+      flash[:notice] = "Unmounted Backup Drive, safe to disconnect."
       redirect '/'
     end
   end
