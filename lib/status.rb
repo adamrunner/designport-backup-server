@@ -35,8 +35,8 @@ module BackupServer
 
     def connected_drives
       return [
-        { drive: "Backup Drive 1", connected:Dir.exists?(settings.backup_drive_1)},
-        { drive: "Backup Drive 2", connected:Dir.exists?(settings.backup_drive_2) }
+        { drive: "Backup Drive 1", connected:File.exists?(settings.backup_drive_1)},
+        { drive: "Backup Drive 2", connected:File.exists?(settings.backup_drive_2) }
       ]
     end
 
