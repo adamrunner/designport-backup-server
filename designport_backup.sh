@@ -37,13 +37,13 @@ determineDriveToMount(){
   if [ -b "$BACKUP_DRIVE_1" ];
   then
    echo `date +%Y/%m/%d' '%T` "Found Backup Drive 1" >> $LOG_FILE
-   `curl -XPOST http://localhost/drive/1/connected`
+   curl -XPOST http://localhost/drive/1/connected
    DEVICE="$BACKUP_DRIVE_1"
   fi
   if [ -b "$BACKUP_DRIVE_2" ];
   then
     echo `date +%Y/%m/%d' '%T` "Found Backup Drive 2" >> $LOG_FILE
-    `curl -XPOST http://localhost/drive/2/connected`
+    curl -XPOST http://localhost/drive/2/connected
     DEVICE="$BACKUP_DRIVE_2"
   fi
 }
@@ -65,11 +65,11 @@ createLogFile() {
 }
 
 runBackup() {
-  `curl -XPOST http://localhost/backup/$DATE_STRING/start`
+  curl -XPOST http://localhost/backup/$DATE_STRING/start
   rsync -a  --exclude-from=$EXCLUDE_FILE $SOURCE $DESTINATION
 
-  echo `date +%Y/%m/%d' '%T` 'Finishing designPORT backup' >> $LOG_FILE
-  `curl -XPOST http://localhost/backup/$DATE_STRING/complete`
+  echo `date +%Y/%m/%d' '%T` 'Finishing designPORT backup - Exit Code ' $? >> $LOG_FILE
+  curl -XPOST http://localhost/backup/$DATE_STRING/complete
   umount $MOUNT_POINT
   echo `date +%Y/%m/%d' '%T` 'Unmounted backup drive' >> $LOG_FILE
   rm $LOCK_FILE

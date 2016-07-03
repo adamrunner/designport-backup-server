@@ -35,7 +35,7 @@ module BackupServer
     end
 
     def find_automated_backup(date_string)
-      @backup = Backup.where(automated: true, date_string: date_string)
+      @backup = Backup.where(automated: true, date_string: date_string).first
       if @backup.nil?
         @backup = Backup.create(automated: true, date_string: date_string)
       end
@@ -56,7 +56,7 @@ module BackupServer
       else
         #TODO: start a new backup in a different thread here
         date_string = Date.today.to_s.gsub("-", "")
-        Backup.create(date_string: date_string, automated: false, drive: @connected_drive)
+        @backup = Backup.create(date_string: date_string, automated: false, drive: @connected_drive)
         flash[:notice] = "Starting a manual backup on #{@connected_drive.name}"
       end
       redirect '/'
@@ -68,8 +68,9 @@ module BackupServer
       @backup.save!
     end
 
-    post '/backup/:date_string/complete' do
+    post '/backup/:date_string/complete' do |date_string|
       find_automated_backup(date_string)
+      @backup.exit_code = "0"
       @backup.completed_at = DateTime.now
       @backup.save!
     end

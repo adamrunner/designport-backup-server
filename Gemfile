@@ -20,3 +20,4 @@ gem 'sys-filesystem'
 gem 'rspec'
 gem 'rack-test', :require => "rack/test"
 gem 'simplecov', :require => false
+gem 'capistrano-rails'

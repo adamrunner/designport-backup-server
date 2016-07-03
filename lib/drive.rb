@@ -3,6 +3,10 @@ class Drive < ActiveRecord::Base
 
   before_save :update_drive_stats
 
+  def self.connected
+    Drive.all.find {|drive| drive.connected? }
+  end
+
   def mounted?
     if BackupServer::Status.settings.development?
       @mounted
