@@ -76,6 +76,15 @@ class Drive < ActiveRecord::Base
     end
   end
 
+  def used_percent
+    if read_attribute(:used_percent).nil?
+      used_percent = ((used_space.to_f / total_space.to_f) * 100).round(3)
+      update_column(:used_percent, used_percent)
+      return used_percent
+    else
+      read_attribute(:used_percent)
+    end
+  end
   protected
   def update_drive_stats
     if connected? and mounted?

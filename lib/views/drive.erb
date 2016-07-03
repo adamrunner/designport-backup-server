@@ -31,7 +31,11 @@
         <% end %>
         <li>Last Connected - <%= last_connected(drive) %></li>
         <li>Last Backed Up - <%= last_backed_up(drive) %></li>
-
+        <li>
+          <p>Used Space - <%= drive.used_percent %>%</p>
+          <%= used_space_bar(drive) %>
+        </li>
+        <li>Drive Size - <%= (drive.total_space.to_f / 1024.0 / 1024.0).round(3) %> GB </li>
       </ul>
     </div>
   </div>

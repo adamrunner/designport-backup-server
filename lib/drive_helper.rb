@@ -24,4 +24,15 @@ module DriveHelper
   def drive_connected_class(drive)
     drive.connected? ? "text-success" : "text-danger"
   end
+
+  def used_space_bar(drive)
+    if drive.used_percent.to_f < 60.0
+      css_class = "progress-success"
+    elsif drive.used_percent.to_f > 60.0 and drive.used_percent.to_f < 75.0
+      css_class = "progress-warning"
+    elsif drive.used_percent.to_f > 75.0
+      css_class = "progress-danger"
+    end
+    "<progress class='progress #{css_class}' value='#{drive.used_percent}' max='100'></progress>"
+  end
 end
