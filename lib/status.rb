@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sqlite3'
+require_relative 'log_parser'
 require 'sinatra/partial'
 require 'sinatra/flash'
 require 'sinatra/activerecord'
@@ -48,8 +49,8 @@ module BackupServer
 
     def is_backup_running?
       if settings.development?
-        # false
-        true
+        false
+        # true
       else
         File.exists?('/tmp/designport_backup.sh.lock')
       end
