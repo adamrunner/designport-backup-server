@@ -15,6 +15,8 @@ gem 'capistrano'
 gem 'capistrano-passenger'
 gem 'capistrano-rbenv', '~> 2.0'
 gem 'capistrano-bundler'
+gem 'thin'
+gem 'sys-filesystem'
 gem 'rspec'
 gem 'rack-test', :require => "rack/test"
 gem 'simplecov', :require => false

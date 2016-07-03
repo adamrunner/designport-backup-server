@@ -1,0 +1,7 @@
+<tr class="<%= row_class(backup) %>">
+  <td><%= backup.drive.try(:name) %></td>
+  <td><%= started_at(backup) %></td>
+  <td><%= completed_at(backup) %></td>
+  <td><%= exit_code(backup) %></td>
+  <td><%= automated(backup) %></td>
+</tr>

@@ -1,24 +1,17 @@
 require 'sinatra'
 require 'sqlite3'
-require_relative 'log_parser'
 require 'sinatra/partial'
 require 'sinatra/flash'
 require 'sinatra/activerecord'
+require_relative 'log_parser'
+require_relative 'disk_space'
+require_relative 'drive'
+require_relative 'drive_helper'
+require_relative 'backup_helper'
 class Backup < ActiveRecord::Base
   belongs_to :drive
 end
 
-class Drive < ActiveRecord::Base
-  has_many :backups
-
-  def connected?
-    if BackupServer::Status.settings.development?
-      drive_name == "Backup Drive 1"
-    else
-      File.exists?(drive_uuid_path)
-    end
-  end
-end
 
 module BackupServer
   class Status < Sinatra::Base
@@ -27,26 +20,11 @@ module BackupServer
     register Sinatra::Partial
     register Sinatra::ActiveRecordExtension
     set :partial_template_engine, :erb
+    set :server, 'thin'
 
     set :logfile, ENV['LOGFILE_LOCATION']
-
-    def is_backup_mounted?
-      if settings.development?
-        # false
-        true
-      else
-        mounted = `mountpoint -q /media/usb && echo 'mounted' || echo 'false'`
-        mounted =~ /mounted/
-      end
-    end
-    def connected_text(drive)
-      drive.connected? ? "#{drive.drive_name} - Connected" : "#{drive.drive_name} - Not Connected"
-    end
-
-    def drive_connected_class(drive)
-      drive.connected? ? "text-success" : "text-danger"
-    end
-
+    include ::DriveHelper
+    include ::BackupHelper
     def is_backup_running?
       if settings.development?
         false
@@ -56,19 +34,66 @@ module BackupServer
       end
     end
 
+    def find_automated_backup(date_string)
+      @backup = Backup.where(automated: true, date_string: date_string)
+      if @backup.nil?
+        @backup = Backup.create(automated: true, date_string: date_string)
+      end
+    end
+
+    ### ROUTES
     get '/' do
       @drives = Drive.all
+      @backups = Backup.order(:completed_at).reverse
       erb :index
     end
 
-    post '/stop_drive' do
-      if settings.development?
+    post '/backup/create' do
 
+      @connected_drive = Drive.connected
+      if @connected_drive.nil?
+        flash[:error] = "Cannot start a backup, no backup drives are connected!"
       else
-        `sudo umount /media/usb`
+        #TODO: start a new backup in a different thread here
+        date_string = Date.today.to_s.gsub("-", "")
+        Backup.create(date_string: date_string, automated: false, drive: @connected_drive)
+        flash[:notice] = "Starting a manual backup on #{@connected_drive.name}"
       end
-      flash[:notice] = "Unmounted Backup Drive, safe to disconnect."
       redirect '/'
+    end
+
+    post '/backup/:date_string/start' do |date_string|
+      find_automated_backup(date_string)
+      @backup.started_at = DateTime.now
+      @backup.save!
+    end
+
+    post '/backup/:date_string/complete' do
+      find_automated_backup(date_string)
+      @backup.completed_at = DateTime.now
+      @backup.save!
+    end
+
+    post '/drive/:id/connected' do |id|
+      drive = Drive.find(id)
+      drive.last_connected = DateTime.now
+      drive.save!
+    end
+
+    post '/drive/:id/mount' do |id|
+      drive = Drive.find(id)
+      if drive.mount!
+        flash[:notice] = "Mounted #{drive.name}, updated drive information."
+        redirect '/'
+      end
+    end
+
+    post '/drive/:id/unmount' do |id|
+      drive = Drive.find(id)
+      if drive.unmount!
+        flash[:notice] = "Unmounted #{drive.name}, safe to disconnect."
+        redirect '/'
+      end
     end
   end
 end

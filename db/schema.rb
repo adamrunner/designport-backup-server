@@ -19,16 +19,22 @@ ActiveRecord::Schema.define(:version => 20160703004524) do
     t.datetime "completed_at"
     t.string   "exit_code"
     t.integer  "drive_id"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.boolean  "automated",    :default => true
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
   end
 
   create_table "drives", :force => true do |t|
     t.datetime "last_connected"
     t.string   "uuid_path"
     t.string   "name"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.string   "mount_point",    :default => "/media/usb"
+    t.integer  "total_space"
+    t.integer  "free_space"
+    t.integer  "used_space"
+    t.decimal  "used_percent"
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
   end
 
 end

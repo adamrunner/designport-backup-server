@@ -1,3 +1,15 @@
+<h3>Backup Drive Status</h3>
 <div class="card-deck">
-  <%= partial :drive_card, collection: @drives %>
+  <%= partial :drive, collection: @drives %>
 </div>
+<h3>Recent Backups</h3>
+<table class="table table-striped table-bordered">
+  <tr>
+    <th>Backup Drive Used</th>
+    <th>Started At</th>
+    <th>Completed At</th>
+    <th>Successful</th>
+    <th>Automated</th>
+  </tr>
+  <%= partial :backup, collection: @backups %>
+</table>

@@ -4,8 +4,9 @@ class CreateBackupTable < ActiveRecord::Migration
       t.string   :date_string
       t.datetime :started_at
       t.datetime :completed_at
-      t.string :exit_code
-      t.integer :drive_id
+      t.string   :exit_code
+      t.integer  :drive_id
+      t.boolean  :automated, default: true
       t.timestamps
     end
   end

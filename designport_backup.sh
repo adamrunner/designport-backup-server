@@ -10,6 +10,7 @@ readonly EXCLUDE_FILE='/etc/rsync-exclude'
 readonly MOUNT_POINT='/media/usb'
 readonly BACKUP_DRIVE_1='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528'
 readonly BACKUP_DRIVE_2='/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa'
+readonly DATE_STRING=`date +%Y%m%d`
 LOCK_FILE=''
 lock() {
     local prefix=$1
@@ -19,7 +20,7 @@ lock() {
     # create lock file
     eval "exec $fd>$lock_file"
 
-    # acquier the lock
+    # acquire the lock
     flock -n $fd \
         && return 0 \
         || return 1
@@ -36,11 +37,13 @@ determineDriveToMount(){
   if [ -b "$BACKUP_DRIVE_1" ];
   then
    echo `date +%Y/%m/%d' '%T` "Found Backup Drive 1" >> $LOG_FILE
+   `curl -XPOST http://localhost/drive/1/connected`
    DEVICE="$BACKUP_DRIVE_1"
   fi
   if [ -b "$BACKUP_DRIVE_2" ];
   then
     echo `date +%Y/%m/%d' '%T` "Found Backup Drive 2" >> $LOG_FILE
+    `curl -XPOST http://localhost/drive/2/connected`
     DEVICE="$BACKUP_DRIVE_2"
   fi
 }
@@ -62,9 +65,11 @@ createLogFile() {
 }
 
 runBackup() {
+  `curl -XPOST http://localhost/backup/$DATE_STRING/start`
   rsync -a  --exclude-from=$EXCLUDE_FILE $SOURCE $DESTINATION
 
   echo `date +%Y/%m/%d' '%T` 'Finishing designPORT backup' >> $LOG_FILE
+  `curl -XPOST http://localhost/backup/$DATE_STRING/complete`
   umount $MOUNT_POINT
   echo `date +%Y/%m/%d' '%T` 'Unmounted backup drive' >> $LOG_FILE
   rm $LOCK_FILE
