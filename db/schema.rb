@@ -32,7 +32,6 @@ ActiveRecord::Schema.define(:version => 20160703004524) do
     t.integer  "total_space"
     t.integer  "free_space"
     t.integer  "used_space"
-    t.decimal  "used_percent"
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
   end
