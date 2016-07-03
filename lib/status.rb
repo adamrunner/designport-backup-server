@@ -44,7 +44,7 @@ module BackupServer
     ### ROUTES
     get '/' do
       @drives = Drive.all
-      @backups = Backup.order(:completed_at).reverse
+      @backups = Backup.order(:started_at).reverse
       erb :index
     end
 
@@ -65,6 +65,7 @@ module BackupServer
     post '/backup/:date_string/start' do |date_string|
       find_automated_backup(date_string)
       @backup.started_at = DateTime.now
+      @backup.drive = Drive.connected
       @backup.save!
     end
 
