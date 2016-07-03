@@ -2,8 +2,10 @@ module DriveHelper
   def last_backed_up(drive)
     if drive.backups.blank?
       return "N/A"
+    elsif drive.backups.last.completed_at.nil?
+      return "N/A"
     else
-      drive.backups.last.try(:completed_at).strftime('%A, %d %b %Y %l:%M %p')
+      drive.backups.last.completed_at.strftime('%A, %d %b %Y %l:%M %p')
     end
   end
 
