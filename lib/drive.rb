@@ -9,7 +9,7 @@ class Drive < ActiveRecord::Base
 
   def mounted?
     if BackupServer::Status.settings.development?
-      @mounted
+      return true if name == "Backup Drive 1"
     else
       mounted = `mountpoint -q #{mount_point} && echo 'mounted' || echo 'false'`
       @mounted = mounted =~ /mounted/

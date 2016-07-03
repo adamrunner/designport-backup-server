@@ -1,25 +1,24 @@
 <div class="card text-center">
+  <div class="card-header"><h4><%= drive.name %></h4></div>
   <div class="card-block">
-    <h3 class="card-title"><%= drive.name %></h3>
     <div class="card-text">
-      <span class="fa-stack fa-4x">
-        <i class="fa fa-square fa-stack-2x <%= drive_connected_class(drive) %>"></i>
-        <i class="fa fa-hdd-o fa-stack-1x text-inverse"></i>
-      </span>
-      <% if (is_backup_running? and drive.connected?) %>
-        <span class="fa-stack fa-4x">
-          <i class="fa fa-square fa-stack-2x text-success"></i>
-          <i class="fa fa-refresh fa-spin fa-stack-1x text-inverse"></i>
-        </span>
-      <% end %>
+      <div class="<%= drive_connected_class(drive) %> text-xs-center drive-icon">
+        <i class="fa fa-hdd-o fa-4x text-inverse"></i>
+        <% if (is_backup_running? and drive.connected?) %>
+            <i class="fa fa-refresh fa-spin fa-4x text-inverse"></i>
+        <% end %>
+      </div>
       <% if drive.connected? and !is_backup_running? and drive.mounted? %>
-        <form action="/drive/<%= drive.id %>/unmount" method="POST" class="form-inline">
-          <button class="btn btn-default" type="submit"><i class="fa fa-eject fa-4x"></i></button>
+        <form action="/drive/<%= drive.id %>/unmount" method="POST">
+          <button class="btn btn-info" type="submit">Unmount Drive - to safely remove</button>
+        </form>
+        <form action="/backup/create" method="POST">
+          <button class="btn btn-success-outline" type="submit">Run a manual backup</button>
         </form>
       <% end %>
       <% if drive.connected? and !drive.mounted? %>
-        <form action="/drive/<%= drive.id %>/mount" method="POST" class="form-inline">
-          <button class="btn btn-default" type="submit">Mount Drive + Update Stats</button>
+        <form action="/drive/<%= drive.id %>/mount" method="POST">
+          <button class="btn btn-primary" type="submit">Mount Drive &amp; Update Stats</button>
         </form>
       <% end %>
       <ul class="list-unstyled">

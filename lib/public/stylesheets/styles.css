@@ -10511,3 +10511,20 @@ a.bg-danger:focus, a.bg-danger:hover {
 .text-inverse {
   color: #f7f7f9;
 }
+
+/* line 21, ../../../sass/styles.scss */
+.drive-icon {
+  padding: 1em;
+  margin-bottom: 1em;
+  border-radius: 0.25rem;
+}
+
+/* line 26, ../../../sass/styles.scss */
+.navbar {
+  margin-bottom: 1em;
+}
+
+/* line 30, ../../../sass/styles.scss */
+form button {
+  margin-bottom: 1em;
+}

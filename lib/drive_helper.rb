@@ -22,7 +22,7 @@ module DriveHelper
   end
 
   def drive_connected_class(drive)
-    drive.connected? ? "text-success" : "text-danger"
+    drive.connected? ? "bg-success" : "bg-danger"
   end
 
   def used_space_bar(drive)
