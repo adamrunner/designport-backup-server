@@ -77,13 +77,7 @@ class Drive < ActiveRecord::Base
   end
 
   def used_percent
-    if read_attribute(:used_percent).nil?
-      used_percent = ((used_space.to_f / total_space.to_f) * 100).round(3)
-      update_column(:used_percent, used_percent)
-      return used_percent
-    else
-      read_attribute(:used_percent)
-    end
+    used_percent = ((used_space.to_f / total_space.to_f) * 100).round(3)
   end
   protected
   def update_drive_stats
@@ -91,7 +85,6 @@ class Drive < ActiveRecord::Base
       self.free_space   = DiskSpace::Free.bytes(mount_point)
       self.used_space   = DiskSpace::Used.bytes(mount_point)
       self.total_space  = DiskSpace::Total.bytes(mount_point)
-      self.used_percent = DiskSpace::Used.percent(mount_point)
     end
   end
 end
