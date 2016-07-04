@@ -38,9 +38,10 @@ module BackupServer
     end
 
     def find_backup(options)
-      @backup = Backup.where(automated: options[:automated], date_string: options[:date_string]).first
+      automated = options[:automated] == 'true'
+      @backup = Drive.connected.backups.where(automated: automated, date_string: options[:date_string]).first
       if @backup.nil?
-        @backup = Backup.create(automated: options[:automated], date_string: options[:date_string])
+        @backup = Drive.connected.backups.create(automated: automated, date_string: options[:date_string])
       end
     end
 
@@ -67,7 +68,6 @@ module BackupServer
     post '/backup/:date_string/start' do |date_string|
       find_backup({date_string: date_string, automated: params[:automated]})
       @backup.started_at = DateTime.now
-      @backup.drive      = Drive.connected
       @backup.save!
     end
 
