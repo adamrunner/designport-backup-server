@@ -26,18 +26,21 @@ module BackupServer
     include ::DriveHelper
     include ::BackupHelper
     def is_backup_running?
+      File.exists?('/tmp/designport_backup.sh.lock')
+    end
+
+    def backup_command
       if settings.development?
-        false
-        # true
+        "touch /tmp/designport_backup.sh.lock && sleep 30 && rm /tmp/designport_backup.sh.lock"
       else
-        File.exists?('/tmp/designport_backup.sh.lock')
+        "sudo /usr/local/bin/designport_backup.sh"
       end
     end
 
-    def find_automated_backup(date_string)
-      @backup = Backup.where(automated: true, date_string: date_string).first
+    def find_backup(options)
+      @backup = Backup.where(automated: options[:automated], date_string: options[:date_string]).first
       if @backup.nil?
-        @backup = Backup.create(automated: true, date_string: date_string)
+        @backup = Backup.create(automated: options[:automated], date_string: options[:date_string])
       end
     end
 
@@ -54,24 +57,23 @@ module BackupServer
       if @connected_drive.nil?
         flash[:error] = "Cannot start a backup, no backup drives are connected!"
       else
-        #TODO: start a new backup in a different thread here
-        date_string = Date.today.to_s.gsub("-", "")
-        @backup = Backup.create(date_string: date_string, automated: false, drive: @connected_drive)
+        pid = Process.spawn(backup_command)
+        Process.detach(pid)
         flash[:notice] = "Starting a manual backup on #{@connected_drive.name}"
       end
       redirect '/'
     end
 
     post '/backup/:date_string/start' do |date_string|
-      find_automated_backup(date_string)
+      find_backup({date_string: date_string, automated: params[:automated]})
       @backup.started_at = DateTime.now
-      @backup.drive = Drive.connected
+      @backup.drive      = Drive.connected
       @backup.save!
     end
 
     post '/backup/:date_string/complete' do |date_string|
-      find_automated_backup(date_string)
-      @backup.exit_code = "0"
+      find_backup({date_string: date_string, automated: params[:automated]})
+      @backup.exit_code    = params[:exit_code]
       @backup.completed_at = DateTime.now
       @backup.save!
     end

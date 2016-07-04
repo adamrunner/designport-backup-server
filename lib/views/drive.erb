@@ -2,10 +2,14 @@
   <div class="card-header"><h4><%= drive.name %></h4></div>
   <div class="card-block">
     <div class="card-text">
-      <div class="<%= drive_connected_class(drive) %> text-xs-center drive-icon">
-        <i class="fa fa-hdd-o fa-4x text-inverse"></i>
+      <div class="flex-row">
+        <div class="<%= drive_connected_class(drive) %> text-xs-center drive-icon">
+          <i class="fa fa-hdd-o fa-4x text-inverse"></i>
+        </div>
         <% if (is_backup_running? and drive.connected?) %>
+          <div class="<%= drive_connected_class(drive) %> text-xs-center drive-icon">
             <i class="fa fa-refresh fa-spin fa-4x text-inverse"></i>
+          </div>
         <% end %>
       </div>
       <% if drive.connected? and !is_backup_running? and drive.mounted? %>
