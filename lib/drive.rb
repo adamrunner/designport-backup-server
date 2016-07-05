@@ -23,6 +23,7 @@ class Drive < ActiveRecord::Base
       `sudo mount #{uuid_path} #{mount_point}`
       save
     end
+    return true
   end
 
   def unmount!
@@ -31,6 +32,7 @@ class Drive < ActiveRecord::Base
     else
       `sudo umount #{mount_point}`
     end
+    return true
   end
 
   def connected?

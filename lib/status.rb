@@ -3,6 +3,7 @@ require 'sqlite3'
 require 'sinatra/partial'
 require 'sinatra/flash'
 require 'sinatra/activerecord'
+require 'sinatra-websocket'
 require_relative 'log_parser'
 require_relative 'disk_space'
 require_relative 'drive'
@@ -21,6 +22,7 @@ module BackupServer
     register Sinatra::ActiveRecordExtension
     set :partial_template_engine, :erb
     set :server, 'thin'
+    set :sockets, []
 
     set :logfile, ENV['LOGFILE_LOCATION']
     include ::DriveHelper
@@ -47,9 +49,24 @@ module BackupServer
 
     ### ROUTES
     get '/' do
-      @drives = Drive.all
-      @backups = Backup.order(:started_at).reverse
-      erb :index
+      if request.websocket?
+        request.websocket do |ws|
+          ws.onopen do
+            settings.sockets << ws
+          end
+          ws.onclose do
+            settings.sockets.delete(ws)
+          end
+        end
+      else
+        @drives = Drive.all
+        @backups = Backup.order(:started_at).reverse
+        erb :index
+      end
+    end
+
+    get '/message' do
+      EM.next_tick { settings.sockets.each{|s| s.send("RANDOM TEXT #{DateTime.now.to_s}") } }
     end
 
     post '/backup/create' do
@@ -87,6 +104,7 @@ module BackupServer
     post '/drive/:id/mount' do |id|
       drive = Drive.find(id)
       if drive.mount!
+        EM.next_tick { settings.sockets.each{|s| s.send({drive:drive.id, status:'mounted'}.to_json) } }
         flash[:notice] = "Mounted #{drive.name}, updated drive information."
         redirect '/'
       end
@@ -95,6 +113,7 @@ module BackupServer
     post '/drive/:id/unmount' do |id|
       drive = Drive.find(id)
       if drive.unmount!
+        EM.next_tick { settings.sockets.each{|s| s.send({drive:drive.id, status:'unmounted'}.to_json) } }
         flash[:notice] = "Unmounted #{drive.name}, safe to disconnect."
         redirect '/'
       end

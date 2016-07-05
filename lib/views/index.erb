@@ -1,3 +1,5 @@
+<div id="messages">
+</div>
 <div class="card-deck">
   <%= partial :drive, collection: @drives %>
 </div>
@@ -12,3 +14,32 @@
   </tr>
   <%= partial :backup, collection: @backups %>
 </table>
+
+<script>
+window.onload = function(){
+  (function(){
+    var show = function(el){
+
+      return function(msg){
+        console.log(msg)
+        var data = JSON.parse(msg)
+        var driveId = "#drive" + data.drive
+        console.log(driveId)
+        if(data.status == "unmounted"){
+          $(driveId).find('.mounted-message').toggleClass('text-danger text-success').text("Not Mounted - Safe To Disconnect")
+        }else if(data.status == "mounted"){
+          $(driveId).find('.mounted-message').toggleClass('text-danger text-success').text("Mounted - Do Not Disconnect")
+        }
+
+      }
+    }(document.getElementById('messages'));
+
+    var ws       = new WebSocket('ws://' + window.location.host + window.location.pathname);
+
+    ws.onclose   = function()  { console.log('websocket closed'); }
+    ws.onmessage = function(m) { show(m.data); };
+
+  })();
+}
+
+</script>

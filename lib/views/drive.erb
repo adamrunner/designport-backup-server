@@ -1,4 +1,4 @@
-<div class="card text-center">
+<div class="card text-center" id="drive<%= drive.id %>">
   <div class="card-header"><h4><%= drive.name %></h4></div>
   <div class="card-block">
     <div class="card-text">
@@ -28,9 +28,9 @@
       <ul class="list-unstyled">
         <li><%= connected_text(drive) %></li>
         <% if drive.connected? and drive.mounted?%>
-          <li class="text-danger">Mounted - Do Not Disconnect</li>
+          <li class="text-danger mounted-message">Mounted - Do Not Disconnect</li>
         <% elsif drive.connected? and !drive.mounted? %>
-          <li class="text-success">Not Mounted - Safe To Disconnect</li>
+          <li class="text-success mounted-message">Not Mounted - Safe To Disconnect</li>
         <% end %>
         <li>Last Connected - <%= last_connected(drive) %></li>
         <li>Last Backed Up - <%= last_backed_up(drive) %></li>
