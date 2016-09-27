@@ -12,7 +12,6 @@ readonly BACKUP_DRIVE_1='/dev/disk/by-uuid/95f3b0ce-b884-4853-bdd9-20ee29ece528'
 readonly BACKUP_DRIVE_2='/dev/disk/by-uuid/a67a8332-db27-4841-a933-16146f2a58aa'
 readonly DATE_STRING=`date +%Y%m%d`
 LOCK_FILE=''
-AUTOMATED=''
 lock() {
     local prefix=$1
     local fd=${2:-$LOCK_FD}
@@ -96,17 +95,8 @@ checkIfDriveMounted() {
     eexit "ERROR $MOUNT_POINT is not a valid mount point"
   fi
 }
-checkIfAutomated() {
-  if [ "$1" == "automated" ]
-  then
-    AUTOMATED='true'
-  else
-    AUTOMATED='false'
-  fi
-}
 main() {
   checkIfRoot
-  checkIfAutomated
   lock $PROGNAME \
       || eexit "`date +%Y/%m/%d' '%T` Only one instance of $PROGNAME can run at one time."
 
