@@ -96,6 +96,12 @@ checkIfDriveMounted() {
   fi
 }
 main() {
+  if [ $1 = "automated" ]; then
+    $AUTOMATED='true'
+  else
+    $AUTOMATED='false'
+  fi
+  
   checkIfRoot
   lock $PROGNAME \
       || eexit "`date +%Y/%m/%d' '%T` Only one instance of $PROGNAME can run at one time."
